@@ -15,6 +15,9 @@ bool load_content() {
   vector<vec3> positions{
       // *********************************
       // Add the three positions of the triangle corners here
+	  vec3(0.0f, 1.0f, 0.0f),
+	  vec3(-1.0f, -1.0f, 0.0f),
+	  vec3(1.0f, 1.0f, 0.0f)
 
       // *********************************
   };
