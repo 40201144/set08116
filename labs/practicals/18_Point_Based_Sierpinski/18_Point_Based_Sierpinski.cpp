@@ -18,8 +18,10 @@ void create_sierpinski(geometry &geom) {
   array<vec3, 3> v = {vec3(-1.0f, -1.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f), vec3(1.0f, -1.0f, 0.0f)};
   // Create random engine - generates random numbers
   default_random_engine e;
+  auto n = e();
   // Create a distribution.  3 points in array so want 0-2
   uniform_int_distribution<int> dist(0, 2);
+  auto n = dist(e);
   // Add first point to the geometry
   points.push_back(vec3(0.25f, 0.5f, 0.0f));
   // Add first colour to the geometry
@@ -28,7 +30,7 @@ void create_sierpinski(geometry &geom) {
   for (auto i = 1; i < num_points; ++i) {
     // *********************************
     // Add random point
-
+	  
     // Add colour - all points red
 
     // *********************************
