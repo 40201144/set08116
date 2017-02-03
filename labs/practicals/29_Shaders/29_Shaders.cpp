@@ -10,6 +10,9 @@ effect eff;
 target_camera cam;
 #define NapierRed 0.765f, 0.082f, 0.196f
 
+
+
+
 bool load_content() {
   // Construct geometry object
   geometry geom;

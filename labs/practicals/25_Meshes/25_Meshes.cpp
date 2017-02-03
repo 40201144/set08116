@@ -24,6 +24,8 @@ bool load_content() {
   // *********************************
   // Create mesh object here
 
+  m = mesh(geom);
+
   // *********************************
 
   // Load in shaders
@@ -58,6 +60,8 @@ bool render() {
   glUniformMatrix4fv(eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
   // *********************************
   // Render the mesh here
+
+  renderer::render(m);
 
   // *********************************
   return true;
