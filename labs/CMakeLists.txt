@@ -29,6 +29,7 @@ download_project(PROJ enu_gfx
   GIT_TAG             master
   ${UPDATE_DISCONNECTED_IF_AVAILABLE}
 )
+
 add_subdirectory(${enu_gfx_SOURCE_DIR} ${enu_gfx_BINARY_DIR})
 include_directories(${enu_gfx_SOURCE_DIR}/src ${enu_graphics_framework_incs}) 
 
@@ -42,7 +43,7 @@ FOREACH(child ${children})
   IF(IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${child})
     get_filename_component(childName ${child} NAME BASE_DIR practicals)
     LIST(APPEND dirlist ${childName})
-    file(GLOB_RECURSE SOURCE_FILES ${child}/*.cpp ${child}/*.h ${child}/*.frag ${child}/*.vert ${child}/*.geom)
+    file(GLOB_RECURSE SOURCE_FILES ${child}/*.cpp ${child}/*.h ${child}/*.frag ${child}/*.vert ${child}/*.geom ${child}/*.comp)
     file(GLOB_RECURSE NOT_RESOURCE_FILES ${child}/*.cpp ${child}/*.h)
     file(GLOB_RECURSE RESOURCE_FILES  ${child}/*.*)
     LIST(REMOVE_ITEM RESOURCE_FILES ${NOT_RESOURCE_FILES}) 
