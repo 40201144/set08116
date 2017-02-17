@@ -10,8 +10,8 @@ effect eff;
 target_camera cam;
 
 bool load_content() {
-  // Create triangle data
-  vector<vec3> positions{vec3(0.0f, 1.0f, 0.0f), vec3(-1.0f, -1.0f, 0.0f), vec3(1.0f, -1.0f, 0.0f)
+  // Shape data
+  vector<vec3> positions{vec3(3.0f, 1.0f, 0.0f), vec3(-4.0f, -1.0f, 0.0f), vec3(2.0f, -1.0f, 0.0f)
 
   };
   // Colours
