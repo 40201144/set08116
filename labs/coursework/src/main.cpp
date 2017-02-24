@@ -5,20 +5,28 @@ using namespace std;
 using namespace graphics_framework;
 using namespace glm;
 
+map<string, mesh> meshes;
 geometry geom;
 effect eff;
+mesh m;
 target_camera cam;
+texture tex;
 
 bool load_content() {
   // Shape data
-  vector<vec3> positions{vec3(3.0f, 1.0f, 0.0f), vec3(-4.0f, -1.0f, 0.0f), vec3(2.0f, -1.0f, 0.0f)
+	meshes["plane"] = mesh(geometry_builder::create_plane());
 
-  };
+	vector<vec3> positions{ vec3(0.0f, 1.0f, 0.0f), vec3(-1.0f, -1.0f, 0.0f), vec3(1.0f, -1.0f, 0.0f) };
+		
+  
   // Colours
   vector<vec4> colours{vec4(1.0f, 0.0f, 0.0f, 1.0f), vec4(1.0f, 0.0f, 0.0f, 1.0f), vec4(1.0f, 0.0f, 0.0f, 1.0f)};
   // Add to the geometry
   geom.add_buffer(positions, BUFFER_INDEXES::POSITION_BUFFER);
   geom.add_buffer(colours, BUFFER_INDEXES::COLOUR_BUFFER);
+
+  glUniform1i(eff.get_uniform_location("tex"), 0);
+  tex = texture("textures/checker.png");
 
   // Load in shaders
   eff.add_shader("shaders/basic.vert", GL_VERTEX_SHADER);
@@ -45,6 +53,7 @@ bool render() {
   renderer::bind(eff);
   // Create MVP matrix
   mat4 M(1.0f);
+  auto M = m.get_transform().get_transform_matrix();
   auto V = cam.get_view();
   auto P = cam.get_projection();
   auto MVP = P * V * M;
