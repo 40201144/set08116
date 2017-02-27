@@ -17,7 +17,7 @@ bool load_content() {
 	meshes["plane"] = mesh(geometry_builder::create_plane());
 
 	vector<vec3> positions{ vec3(0.0f, 1.0f, 0.0f), vec3(-1.0f, -1.0f, 0.0f), vec3(1.0f, -1.0f, 0.0f) };
-		
+	
   
   // Colours
   vector<vec4> colours{vec4(1.0f, 0.0f, 0.0f, 1.0f), vec4(1.0f, 0.0f, 0.0f, 1.0f), vec4(1.0f, 0.0f, 0.0f, 1.0f)};
@@ -26,7 +26,7 @@ bool load_content() {
   geom.add_buffer(colours, BUFFER_INDEXES::COLOUR_BUFFER);
 
   glUniform1i(eff.get_uniform_location("tex"), 0);
-  tex = texture("textures/checker.png");
+  tex = texture("textures/check_1.png");
 
   // Load in shaders
   eff.add_shader("shaders/basic.vert", GL_VERTEX_SHADER);
