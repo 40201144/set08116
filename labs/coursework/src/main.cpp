@@ -7,56 +7,27 @@ using namespace glm;
 
 map<string, mesh> meshes;
 effect eff;
-texture tex;
+texture planetex;
+texture walltex;
+texture balltex;
 free_camera cam;
 
 bool load_content() {
 	// Create plane mesh
 	meshes["plane"] = mesh(geometry_builder::create_plane());
 
-	// *********************************
-	// box
+	//Create the wall
+	meshes["wall"] = mesh(geometry("models/oldWall.obj"));
 
-	// Tetrahedron
+	//Create the Ball
+	meshes["ball"] = mesh(geometry_builder::create_sphere(16, 16, vec3(2, 2, 2)));
+	meshes["ball"].get_transform().position =vec3(10.0f, 2.0f, 0.0f);
 
-	// Pyramid
+	// Load textures
 
-	// Disk
-
-	// Cylinder
-
-	// Sphere
-
-	// Torus
-
-
-	// Set the transforms for your meshes here
-	// 5x scale, move(-10.0f, 2.5f, -30.0f)
-
-
-	// 4x scale, move(-30.0f, 10.0f, -10.0f)
-
-
-	// 5x scale, move(-10.0f, 7.5f, -30.0f)
-
-
-	// scale(3.0f, 1.0f, 3.0f), move(-10.0f, 11.5f, -30.0f), 180 rotate X axis
-
-
-
-	// 5x scale, move(-25.0f, 2.5f, -25.0f)
-
-
-	// 2.5x scale, move(-25.0f, 10.0f, -25.0f)
-
-
-	// 180 rotate X axis, move(-25.0f, 10.0f, -25.0f)
-
-
-	// *********************************
-
-	// Load texture
-	tex = texture("textures/check_1.png");
+	planetex = texture("textures/dirt.jpg");
+	walltex = texture("textures/wall1.jpg");
+	balltex = texture("textures/ball.jpg");
 
 	// Load in shaders
 	eff.add_shader("shaders/basic.vert", GL_VERTEX_SHADER);
@@ -73,6 +44,10 @@ bool load_content() {
 }
 
 bool update(float delta_time) {
+	//Rotation of ball
+	meshes["ball"].get_transform().rotate(vec3(2.0f, half_pi<float>(), 0.0f)*delta_time);
+
+	//Free camera
 	// The ratio of pixels to rotation - remember the fov
 	static double ratio_width = quarter_pi<float>() / static_cast<float>(renderer::get_screen_width());
 	static double ratio_height =
@@ -94,16 +69,22 @@ bool update(float delta_time) {
 	// Use keyboard to move the camera - WASD
 	vec3 translation(0.0f, 0.0f, 0.0f);
 	if (glfwGetKey(renderer::get_window(), 'W')) {
-		translation.z += 5.0f * delta_time;
+		translation.z += 15.0f * delta_time;
 	}
 	if (glfwGetKey(renderer::get_window(), 'S')) {
-		translation.z -= 5.0f * delta_time;
+		translation.z -= 15.0f * delta_time;
 	}
 	if (glfwGetKey(renderer::get_window(), 'A')) {
-		translation.x -= 5.0f * delta_time;
+		translation.x -= 15.0f * delta_time;
 	}
 	if (glfwGetKey(renderer::get_window(), 'D')) {
-		translation.x += 5.0f * delta_time;
+		translation.x += 15.0f * delta_time;
+	}
+	if (glfwGetKey(renderer::get_window(), 'E')) {
+		translation.y += 15.0f * delta_time;
+	}
+	if (glfwGetKey(renderer::get_window(), 'Q')) {
+		translation.y -= 15.0f * delta_time;
 	}
 	// Move camera
 	cam.move(translation);
@@ -131,9 +112,23 @@ bool render() {
 
 		// *********************************
 		// Bind texture to renderer
-		renderer::bind(tex, 0);
+		if (e.first == "plane")
+		{
+			renderer::bind(planetex, 0);
+		}
+		if (e.first == "ball")
+		{
+			renderer::bind(balltex, 0);
+		}
+		if (e.first == "wall")
+		{
+			renderer::bind(walltex, 0);
+		}
 		// Set the texture value for the shader here
-		glUniform1i(eff.get_uniform_location("tex"), 0);
+		glUniform1i(eff.get_uniform_location("planetex"), 0);
+		glUniform1i(eff.get_uniform_location("walltex"), 1);
+		glUniform1i(eff.get_uniform_location("balltex"), 2);
+
 		// *********************************
 		// Render mesh
 		renderer::render(m);
