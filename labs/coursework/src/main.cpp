@@ -24,7 +24,6 @@ bool load_content() {
 	meshes["ball"].get_transform().position =vec3(10.0f, 2.0f, 0.0f);
 
 	// Load textures
-
 	planetex = texture("textures/dirt.jpg");
 	walltex = texture("textures/wall1.jpg");
 	balltex = texture("textures/ball.jpg");
