@@ -17,7 +17,7 @@ bool load_content() {
 	meshes["plane"] = mesh(geometry_builder::create_plane());
 
 	//Create the wall
-	meshes["wall"] = mesh(geometry("textures/oldWall.obj"));
+	meshes["wall"] = mesh(geometry("oldWall.obj"));
 
 	//Create the Ball
 	meshes["ball"] = mesh(geometry_builder::create_sphere(16, 16, vec3(2, 2, 2)));
