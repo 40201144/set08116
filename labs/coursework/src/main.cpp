@@ -17,7 +17,7 @@ bool load_content() {
 	meshes["plane"] = mesh(geometry_builder::create_plane());
 
 	//Create the wall
-	meshes["wall"] = mesh(geometry("models/oldWall.obj"));
+	meshes["wall"] = mesh(geometry("textures/oldWall.obj"));
 
 	//Create the Ball
 	meshes["ball"] = mesh(geometry_builder::create_sphere(16, 16, vec3(2, 2, 2)));
@@ -65,7 +65,7 @@ bool update(float delta_time) {
 	delta_y *= ratio_height;
 	// Rotate cameras by delta
 	cam.rotate(delta_x, -delta_y);
-	// Use keyboard to move the camera - WASD
+	// Use keyboard to move the camera - WASDQE
 	vec3 translation(0.0f, 0.0f, 0.0f);
 	if (glfwGetKey(renderer::get_window(), 'W')) {
 		translation.z += 15.0f * delta_time;
