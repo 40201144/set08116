@@ -5,6 +5,7 @@ using namespace std;
 using namespace graphics_framework;
 using namespace glm;
 
+map<string, mesh> meshes;
 mesh sphere;
 mesh skybox;
 effect eff;
@@ -17,6 +18,8 @@ bool load_content() {
   sphere = mesh(geometry_builder::create_sphere(25, 25));
   // *********************************
   // Create box geometry for skybox
+  meshes["box"] = mesh(geometry_builder::create_box());
+  meshes["box"].get_transform().position = vec3(100.0f, 100.0f, 100.0f);
 
   // Scale box by 100
 
@@ -87,10 +90,10 @@ bool render() {
   // Bind effect
   renderer::bind(eff);
   // Create MVP matrix
-  M = sphere.get_transform().get_transform_matrix();
-  V = cam.get_view();
-  P = cam.get_projection();
-  MVP = P * V * M;
+  auto M = sphere.get_transform().get_transform_matrix();
+  auto V = cam.get_view();
+  auto P = cam.get_projection();
+  auto MVP = P * V * M;
   // Set MVP matrix uniform
   glUniformMatrix4fv(eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
   // Render mesh
