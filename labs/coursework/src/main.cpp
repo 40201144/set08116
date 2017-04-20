@@ -11,6 +11,7 @@ texture planetex;
 texture walltex;
 texture balltex;
 free_camera cam;
+point_light light;
 
 bool load_content() {
 	// Create plane mesh
@@ -18,15 +19,28 @@ bool load_content() {
 
 	//Create the wall
 	meshes["wall"] = mesh(geometry("oldWall.obj"));
+	meshes["wall"].get_material().set_diffuse(vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	meshes["wall"].get_material().set_specular(vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	meshes["wall"].get_material().set_shininess(25.0f);
+	meshes["wall"].get_material().set_emissive(vec4(0.25f, 0.25f, 0.25f, 1.0f));
 
 	//Create the Ball
 	meshes["ball"] = mesh(geometry_builder::create_sphere(16, 16, vec3(2, 2, 2)));
 	meshes["ball"].get_transform().position =vec3(10.0f, 2.0f, 0.0f);
+	meshes["ball"].get_material().set_diffuse(vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	meshes["ball"].get_material().set_specular(vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	meshes["ball"].get_material().set_shininess(25.0f);
+	meshes["ball"].get_material().set_emissive(vec4(0.25f, 0.25f, 0.25f, 1.0f));
 
 	// Load textures
 	planetex = texture("textures/dirt.jpg");
 	walltex = texture("textures/wall1.jpg");
 	balltex = texture("textures/ball.jpg");
+
+	//Properties of the light
+	light.set_position(vec3(40, 40, 40));
+	light.set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	light.set_range(2000);
 
 	// Load in shaders
 	eff.add_shader("shaders/basic.vert", GL_VERTEX_SHADER);
@@ -105,9 +119,18 @@ bool render() {
 		auto M = m.get_transform().get_transform_matrix();
 		auto V = cam.get_view();
 		auto P = cam.get_projection();
+
 		auto MVP = P * V * M;
 		// Set MVP matrix uniform
 		glUniformMatrix4fv(eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
+		// Set M matrix uniform
+		glUniformMatrix4fv(eff.get_uniform_location("M"), 1, GL_FALSE, value_ptr(M));
+		// Set N matrix uniform
+		glUniformMatrix3fv(eff.get_uniform_location("N"), 1, GL_FALSE, value_ptr(m.get_transform().get_normal_matrix()));
+		// Bind material
+		renderer::bind(m.get_material(), "mat");
+		// Bind light
+		renderer::bind(light, "point");
 
 		// *********************************
 		// Bind texture to renderer
