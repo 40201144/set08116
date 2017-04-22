@@ -7,27 +7,25 @@ using namespace glm;
 
 map<string, mesh> meshes;
 effect eff;
+effect gs;
+effect mask;
 texture planetex;
 texture walltex;
 texture balltex;
+texture alpha_map;
 free_camera cam;
 point_light light;
 frame_buffer frame;     
-geometry screen_quad;   
-effect gs;
-effect mask;
+geometry screen_quad;
 bool gs_toggle;
 bool mask_toggle;
-texture alpha_map;
 
 bool load_content() {
 
-	     //For post-processing
-		 // Create frame buffer - use screen width and height
+	// Create frame buffer - use screen width and height
 	frame = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
 	// Create screen quad
-	vector<vec3> positions{ vec3(-1.0f, -1.0f, 0.0f), vec3(1.0f, -1.0f, 0.0f), vec3(-1.0f, 1.0f, 0.0f),
-		vec3(1.0f, 1.0f, 0.0f) };
+	vector<vec3> positions{ vec3(-1.0f, -1.0f, 0.0f), vec3(1.0f, -1.0f, 0.0f), vec3(-1.0f, 1.0f, 0.0f), vec3(1.0f, 1.0f, 0.0f) };
 	vector<vec2> tex_coords{ vec2(0.0, 0.0), vec2(1.0f, 0.0f), vec2(0.0f, 1.0f), vec2(1.0f, 1.0f) };
 	screen_quad.add_buffer(positions, BUFFER_INDEXES::POSITION_BUFFER);
 	screen_quad.add_buffer(tex_coords, BUFFER_INDEXES::TEXTURE_COORDS_0);
@@ -56,24 +54,23 @@ bool load_content() {
 	walltex = texture("textures/wall1.jpg");
 	balltex = texture("textures/ball.jpg");
 
-		//Masking texture
-		alpha_map = texture("textures/check_1.png");
+	//Masking texture
+	alpha_map = texture("textures/check_1.png");
 
 	//Properties of the light
 	light.set_position(vec3(40, 40, 40));
 	light.set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	light.set_range(2000);
 
-	// Load in shaders
+	// Load in lighting shaders
 	eff.add_shader("shaders/basic.vert", GL_VERTEX_SHADER);
 	eff.add_shader("shaders/basic.frag", GL_FRAGMENT_SHADER);
 	
-	
-	//For greyscale
+	//For greyscale shaders
 	gs.add_shader("shaders/greyscale.vert", GL_VERTEX_SHADER);
 	gs.add_shader("shaders/greyscale.frag", GL_FRAGMENT_SHADER);
 	
-	//For greyscale
+	//For greyscale shaders
 	mask.add_shader("shaders/masking.vert", GL_VERTEX_SHADER);
 	mask.add_shader("shaders/masking.frag", GL_FRAGMENT_SHADER);
 	
@@ -93,11 +90,11 @@ bool load_content() {
 bool update(float delta_time) {
 	//Rotation of ball
 	meshes["ball"].get_transform().rotate(vec3(2.0f, half_pi<float>(), 0.0f)*delta_time);
+
 	//Free camera
 	// The ratio of pixels to rotation - remember the fov
 	static double ratio_width = quarter_pi<float>() / static_cast<float>(renderer::get_screen_width());
-	static double ratio_height =
-		(quarter_pi<float>() * renderer::get_screen_aspect()) / static_cast<float>(renderer::get_screen_height());
+	static double ratio_height =(quarter_pi<float>() * renderer::get_screen_aspect()) / static_cast<float>(renderer::get_screen_height());
 	static double cursor_x = 0.0;
 	static double cursor_y = 0.0;
 	double current_x;
@@ -112,7 +109,7 @@ bool update(float delta_time) {
 	delta_y *= ratio_height;
 	// Rotate cameras by delta
 	cam.rotate(delta_x, -delta_y);
-	// Use keyboard to move the camera - WASDQE
+	// Use keyboard to move the camera - WASDQE + WDHJTU(Slower) As well as toggling post-processing effects
 	vec3 translation(0.0f, 0.0f, 0.0f);
 	if (glfwGetKey(renderer::get_window(), 'W')) {
 		translation.z += 15.0f * delta_time;
@@ -173,23 +170,20 @@ bool update(float delta_time) {
 }
 
 bool render() {
-
-	//For greyscale
+	//For toggling greyscale
 	if (gs_toggle  == true) {
 		// Set render target to frame buffer
 		renderer::set_render_target(frame);
 		// Clear frame
 		renderer::clear();
 	}
-	//For masking
+	//For toggling masking
 	if (mask_toggle == true) {
 		// Set render target to frame buffer
 		renderer::set_render_target(frame);
 		// Clear frame
 		renderer::clear();
 	}
-
-
 	// Render meshes
 	for (auto &e : meshes) {
 		auto m = e.second;
@@ -199,7 +193,6 @@ bool render() {
 		auto M = m.get_transform().get_transform_matrix();
 		auto V = cam.get_view();
 		auto P = cam.get_projection();
-
 		auto MVP = P * V * M;
 		// Set MVP matrix uniform
 		glUniformMatrix4fv(eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
@@ -236,45 +229,45 @@ bool render() {
 		renderer::render(m);
 	}
 
-	     //Greyscale
-	if (gs_toggle == true) {
-		// Set render target back to the screen
-		renderer::set_render_target();
-		// Bind Tex effect
-		renderer::bind(gs);
-		// MVP is now the identity matrix
-		auto MVP = glm::mat4();
-		// Set MVP matrix uniform
-		glUniformMatrix4fv(gs.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
-		// Bind texture from frame buffer
-		renderer::bind(frame.get_frame(), 0);
-		// Set the tex uniform
-		glUniform1i(gs.get_uniform_location("tex"), 0);
-		// Render the screen quad
-		renderer::render(screen_quad);
-	}
+	    //For toggling Greyscale
+		if (gs_toggle == true) {
+			// Set render target back to the screen
+			renderer::set_render_target();
+			// Bind Tex effect
+			renderer::bind(gs);
+			// MVP is now the identity matrix
+			auto MVP = glm::mat4();
+			// Set MVP matrix uniform
+			glUniformMatrix4fv(gs.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
+			// Bind texture from frame buffer
+			renderer::bind(frame.get_frame(), 0);
+			// Set the tex uniform
+			glUniform1i(gs.get_uniform_location("tex"), 0);
+			// Render the screen quad
+			renderer::render(screen_quad);
+		}
 
-	if (mask_toggle == true) {
-		// Set render target back to the screen
-		renderer::set_render_target();
-		// Bind Tex effect
-		renderer::bind(mask);
-		// MVP is now the identity matrix
-		auto MVP = glm::mat4();
-		// Set MVP matrix uniform
-		glUniformMatrix4fv(mask.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
-		// Bind texture from frame buffer to TU 0
-		renderer::bind(frame.get_frame(), 0);
-		// Set the tex uniform, 0
-		glUniform1i(mask.get_uniform_location("tex"), 0);
-		// Bind alpha texture to TU, 1
-		renderer::bind(alpha_map, 1);
-		// Set the tex uniform, 1
-		glUniform1i(mask.get_uniform_location("tex"), 1);
-		// Render the screen quad
-		renderer::render(screen_quad);
-	}
-
+		//For toggling masking
+		if (mask_toggle == true) {
+			// Set render target back to the screen
+			renderer::set_render_target();
+			// Bind Tex effect
+			renderer::bind(mask);
+			// MVP is now the identity matrix
+			auto MVP = glm::mat4();
+			// Set MVP matrix uniform
+			glUniformMatrix4fv(mask.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
+			// Bind texture from frame buffer to TU 0
+			renderer::bind(frame.get_frame(), 0);
+			// Set the tex uniform, 0
+			glUniform1i(mask.get_uniform_location("tex"), 0);
+			// Bind alpha texture to TU, 1
+			renderer::bind(alpha_map, 1);
+			// Set the tex uniform, 1
+			glUniform1i(mask.get_uniform_location("tex"), 1);
+			// Render the screen quad
+			renderer::render(screen_quad);
+		}
 	return true;
 }
 
