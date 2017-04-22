@@ -111,6 +111,7 @@ bool update(float delta_time) {
 	cam.rotate(delta_x, -delta_y);
 	// Use keyboard to move the camera - WASDQE + WDHJTU(Slower) As well as toggling post-processing effects
 	vec3 translation(0.0f, 0.0f, 0.0f);
+	//Movement - Normal
 	if (glfwGetKey(renderer::get_window(), 'W')) {
 		translation.z += 15.0f * delta_time;
 	}
@@ -129,6 +130,7 @@ bool update(float delta_time) {
 	if (glfwGetKey(renderer::get_window(), 'Q')) {
 		translation.y -= 15.0f * delta_time;
 	}
+	//Movement - Slow
 	if (glfwGetKey(renderer::get_window(), 'Y')) {
 		translation.z += 5.0f * delta_time;
 	}
@@ -147,15 +149,19 @@ bool update(float delta_time) {
 	if (glfwGetKey(renderer::get_window(), 'T')) {
 		translation.y -= 5.0f * delta_time;
 	}
+	//Toggle Grey scale on
 	if (glfwGetKey(renderer::get_window(), 'M')) {
 			gs_toggle = true;
 	}
+	//Toggle Grey scale off
 	if (glfwGetKey(renderer::get_window(), 'N')) {
 		gs_toggle = false;
 	}
+	//Toggle Masking on
 	if (glfwGetKey(renderer::get_window(), 'L')) {
 		mask_toggle = true;
 	}
+	//Toggle Masking off
 	if (glfwGetKey(renderer::get_window(), 'K')) {
 		mask_toggle = false;
 	}
@@ -184,6 +190,7 @@ bool render() {
 		// Clear frame
 		renderer::clear();
 	}
+
 	// Render meshes
 	for (auto &e : meshes) {
 		auto m = e.second;
